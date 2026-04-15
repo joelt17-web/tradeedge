@@ -1,0 +1,2023 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TradeEdge PRO</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Barlow:wght@300;400;500;600;700;800;900&family=Barlow+Condensed:wght@400;600;700;800&display=swap');
+
+:root {
+  --bg: #05080d;
+  --s1: #090e16;
+  --s2: #0e1520;
+  --s3: #141d2b;
+  --border: #1a2535;
+  --border2: #243042;
+  --g: #00ff87;
+  --g2: #00d4ff;
+  --y: #ffd600;
+  --r: #ff2d55;
+  --o: #ff6b00;
+  --text: #e2eaf5;
+  --muted: #4a6580;
+  --muted2: #7a98b8;
+  --mono: 'Space Mono', monospace;
+  --body: 'Barlow', sans-serif;
+  --cond: 'Barlow Condensed', sans-serif;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* scanline overlay */
+body::after {
+  content:'';
+  position:fixed;
+  inset:0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
+  pointer-events:none;
+  z-index:9999;
+}
+
+/* grid */
+body::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:
+    linear-gradient(rgba(0,255,135,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,255,135,0.02) 1px, transparent 1px);
+  background-size:60px 60px;
+  pointer-events:none;
+  z-index:0;
+}
+
+.app {
+  position:relative;
+  z-index:1;
+  display:grid;
+  grid-template-columns:260px 1fr;
+  grid-template-rows:60px 1fr;
+  min-height:100vh;
+}
+
+/* ═══ HEADER ═══ */
+header {
+  grid-column:1/-1;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 28px;
+  background:rgba(5,8,13,0.97);
+  border-bottom:1px solid var(--border);
+  position:sticky;
+  top:0;
+  z-index:200;
+}
+
+.logo {
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.logo-mark {
+  width:32px;
+  height:32px;
+  position:relative;
+  flex-shrink:0;
+}
+
+.logo-mark svg { width:32px; height:32px; }
+
+.logo-text {
+  font-family:var(--cond);
+  font-weight:800;
+  font-size:22px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--text);
+}
+
+.logo-pro {
+  font-family:var(--mono);
+  font-size:9px;
+  background:var(--g);
+  color:#000;
+  padding:2px 5px;
+  border-radius:2px;
+  letter-spacing:1px;
+  font-weight:700;
+}
+
+.hdr-center {
+  display:flex;
+  align-items:center;
+  gap:20px;
+}
+
+.hdr-stat {
+  text-align:center;
+  padding:0 16px;
+  border-left:1px solid var(--border);
+}
+.hdr-stat:first-child { border-left:none; }
+.hdr-stat-label { font-family:var(--mono); font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; }
+.hdr-stat-val { font-family:var(--cond); font-size:18px; font-weight:700; letter-spacing:-0.5px; margin-top:1px; }
+
+.hdr-right {
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.pulse-dot {
+  width:8px; height:8px;
+  background:var(--g);
+  border-radius:50%;
+  box-shadow:0 0 0 0 rgba(0,255,135,0.4);
+  animation:sonar 2s ease-in-out infinite;
+}
+
+@keyframes sonar {
+  0%{box-shadow:0 0 0 0 rgba(0,255,135,0.4)}
+  70%{box-shadow:0 0 0 8px rgba(0,255,135,0)}
+  100%{box-shadow:0 0 0 0 rgba(0,255,135,0)}
+}
+
+.clock {
+  font-family:var(--mono);
+  font-size:13px;
+  color:var(--muted2);
+  padding:6px 12px;
+  background:var(--s2);
+  border:1px solid var(--border);
+  border-radius:4px;
+}
+
+/* ═══ SIDEBAR ═══ */
+aside {
+  background:var(--s1);
+  border-right:1px solid var(--border);
+  padding:24px 0;
+  display:flex;
+  flex-direction:column;
+  overflow-y:auto;
+}
+
+.nav-group { margin-bottom:8px; }
+
+.nav-group-label {
+  font-family:var(--mono);
+  font-size:9px;
+  color:var(--muted);
+  letter-spacing:2px;
+  text-transform:uppercase;
+  padding:0 20px;
+  margin-bottom:4px;
+}
+
+.nav-item {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 20px;
+  cursor:pointer;
+  font-size:14px;
+  font-weight:500;
+  color:var(--muted2);
+  transition:all 0.12s;
+  border-left:3px solid transparent;
+  position:relative;
+}
+
+.nav-item:hover { color:var(--text); background:rgba(255,255,255,0.03); }
+
+.nav-item.active {
+  color:var(--g);
+  background:rgba(0,255,135,0.05);
+  border-left-color:var(--g);
+}
+
+.nav-item .n-icon { font-size:16px; width:20px; text-align:center; }
+
+.nav-badge {
+  margin-left:auto;
+  background:rgba(0,255,135,0.15);
+  color:var(--g);
+  font-family:var(--mono);
+  font-size:10px;
+  padding:2px 7px;
+  border-radius:10px;
+  border:1px solid rgba(0,255,135,0.2);
+}
+
+.nav-divider { height:1px; background:var(--border); margin:12px 20px; }
+
+/* ═══ MAIN ═══ */
+main {
+  overflow-y:auto;
+  padding:28px 32px;
+  display:flex;
+  flex-direction:column;
+  gap:24px;
+}
+
+.page { display:none; }
+.page.active { display:flex; flex-direction:column; gap:22px; animation:fadeUp 0.2s ease; }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+@keyframes spin { to{transform:rotate(360deg)} }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+@keyframes shimmer { 0%{background-position:-400px 0} 100%{background-position:400px 0} }
+@keyframes slideIn { from{opacity:0;transform:translateX(-10px)} to{opacity:1;transform:translateX(0)} }
+
+/* ═══ SECTION HEADER ═══ */
+.page-hdr {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:16px;
+}
+
+.page-title {
+  font-family:var(--cond);
+  font-weight:800;
+  font-size:28px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  line-height:1;
+}
+
+.page-sub { font-size:13px; color:var(--muted2); margin-top:4px; }
+
+/* ═══ KPI ═══ */
+.kpi-row { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; }
+
+.kpi {
+  background:var(--s2);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:14px 16px;
+  position:relative;
+  overflow:hidden;
+  transition:border-color 0.2s;
+}
+
+.kpi:hover { border-color:var(--border2); }
+
+.kpi::before {
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;
+  height:2px;
+  background:var(--kc, var(--g));
+}
+
+.kpi-label {
+  font-family:var(--mono);
+  font-size:9px;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:1.5px;
+  margin-bottom:8px;
+}
+
+.kpi-val {
+  font-family:var(--cond);
+  font-size:24px;
+  font-weight:700;
+  letter-spacing:-0.5px;
+  line-height:1;
+}
+
+.kpi-meta { font-family:var(--mono); font-size:10px; color:var(--muted); margin-top:4px; }
+
+/* ═══ CARD ═══ */
+.card {
+  background:var(--s1);
+  border:1px solid var(--border);
+  border-radius:8px;
+  overflow:hidden;
+}
+
+.card-hdr {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 20px;
+  border-bottom:1px solid var(--border);
+}
+
+.card-title {
+  font-family:var(--cond);
+  font-weight:700;
+  font-size:15px;
+  letter-spacing:0.5px;
+  text-transform:uppercase;
+}
+
+.card-body { padding:20px; }
+
+/* ═══ BTN ═══ */
+.btn {
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:10px 20px;
+  border-radius:5px;
+  border:none;
+  cursor:pointer;
+  font-family:var(--body);
+  font-size:13px;
+  font-weight:600;
+  transition:all 0.12s;
+  white-space:nowrap;
+}
+
+.btn-g { background:var(--g); color:#000; }
+.btn-g:hover { background:#00ffaa; box-shadow:0 0 20px rgba(0,255,135,0.35); }
+.btn-g:disabled { opacity:0.4; cursor:not-allowed; }
+
+.btn-outline {
+  background:transparent;
+  color:var(--muted2);
+  border:1px solid var(--border2);
+}
+.btn-outline:hover { color:var(--text); border-color:var(--g); color:var(--g); }
+
+.btn-sm { padding:6px 12px; font-size:12px; }
+.btn-xs { padding:4px 9px; font-size:11px; }
+
+/* ═══ TABS ═══ */
+.tabs {
+  display:flex;
+  gap:0;
+  border:1px solid var(--border);
+  border-radius:6px;
+  overflow:hidden;
+  background:var(--s2);
+}
+
+.tab {
+  padding:8px 16px;
+  font-size:12px;
+  font-weight:600;
+  font-family:var(--cond);
+  letter-spacing:0.5px;
+  text-transform:uppercase;
+  cursor:pointer;
+  color:var(--muted2);
+  transition:all 0.12s;
+  border-right:1px solid var(--border);
+}
+
+.tab:last-child { border-right:none; }
+.tab:hover { color:var(--text); background:rgba(255,255,255,0.04); }
+.tab.active { background:rgba(0,255,135,0.1); color:var(--g); }
+
+/* ═══ BADGE ═══ */
+.badge {
+  display:inline-flex; align-items:center; gap:4px;
+  padding:3px 8px; border-radius:3px;
+  font-family:var(--mono); font-size:10px; font-weight:700;
+  letter-spacing:0.5px;
+}
+.b-g { background:rgba(0,255,135,0.1); color:var(--g); border:1px solid rgba(0,255,135,0.2); }
+.b-r { background:rgba(255,45,85,0.1); color:var(--r); border:1px solid rgba(255,45,85,0.2); }
+.b-y { background:rgba(255,214,0,0.1); color:var(--y); border:1px solid rgba(255,214,0,0.2); }
+.b-o { background:rgba(255,107,0,0.1); color:var(--o); border:1px solid rgba(255,107,0,0.2); }
+.b-b { background:rgba(0,212,255,0.1); color:var(--g2); border:1px solid rgba(0,212,255,0.2); }
+.b-m { background:rgba(74,101,128,0.15); color:var(--muted2); border:1px solid rgba(74,101,128,0.3); }
+.b-live { background:rgba(255,45,85,0.12); color:var(--r); border:1px solid rgba(255,45,85,0.25); animation:blink 1.5s ease-in-out infinite; }
+
+/* ═══ TABLE ═══ */
+.tbl { width:100%; border-collapse:collapse; font-size:13px; }
+.tbl th { font-family:var(--mono); font-size:9px; color:var(--muted); letter-spacing:1.5px; text-transform:uppercase; text-align:left; padding:0 14px 12px; border-bottom:1px solid var(--border); }
+.tbl td { padding:11px 14px; border-bottom:1px solid rgba(26,37,53,0.6); vertical-align:middle; }
+.tbl tr:last-child td { border-bottom:none; }
+.tbl tr:hover td { background:rgba(0,255,135,0.02); }
+
+/* ═══ FORM ═══ */
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.form-group { display:flex; flex-direction:column; gap:5px; }
+.form-group.full { grid-column:1/-1; }
+
+label {
+  font-family:var(--mono);
+  font-size:9px;
+  color:var(--muted);
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+}
+
+input, select, textarea {
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:5px;
+  color:var(--text);
+  font-family:var(--body);
+  font-size:13.5px;
+  padding:9px 12px;
+  outline:none;
+  transition:border-color 0.15s;
+  width:100%;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color:rgba(0,255,135,0.4);
+  box-shadow:0 0 0 3px rgba(0,255,135,0.05);
+}
+
+select option { background:var(--s2); }
+
+/* ═══ TOGGLE ═══ */
+.toggle { width:40px; height:22px; background:var(--border2); border-radius:11px; position:relative; cursor:pointer; transition:background 0.2s; flex-shrink:0; }
+.toggle.on { background:var(--g); }
+.toggle::after { content:''; position:absolute; width:16px; height:16px; background:white; border-radius:50%; top:3px; left:3px; transition:left 0.2s; }
+.toggle.on::after { left:21px; }
+
+.rule-row { display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid rgba(26,37,53,0.6); }
+.rule-row:last-child { border-bottom:none; }
+.rule-title { font-size:13.5px; font-weight:500; }
+.rule-desc { font-size:11.5px; color:var(--muted); margin-top:2px; }
+
+/* ═══ REC CARD ═══ */
+.rec-card {
+  background:var(--s1);
+  border:1px solid var(--border);
+  border-radius:8px;
+  overflow:hidden;
+  transition:border-color 0.2s, box-shadow 0.2s;
+  animation:slideIn 0.25s ease backwards;
+}
+
+.rec-card:hover {
+  border-color:var(--border2);
+  box-shadow:0 4px 24px rgba(0,0,0,0.3);
+}
+
+.rec-card.c-high { border-left:3px solid var(--g); }
+.rec-card.c-med { border-left:3px solid var(--y); }
+.rec-card.c-low { border-left:3px solid var(--muted); }
+
+.rec-top {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:14px 18px;
+  border-bottom:1px solid var(--border);
+  flex-wrap:wrap;
+}
+
+.rec-match-name {
+  font-family:var(--cond);
+  font-weight:700;
+  font-size:17px;
+  letter-spacing:0.3px;
+  flex:1;
+  min-width:180px;
+}
+
+.rec-league {
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--muted2);
+  margin-top:2px;
+}
+
+.rec-grid {
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:20px;
+  padding:16px 18px;
+  align-items:start;
+}
+
+.rec-left { display:flex; flex-direction:column; gap:12px; }
+
+.rec-selection-row { display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+
+.rec-market-label {
+  font-family:var(--mono);
+  font-size:9px;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:1.5px;
+  margin-bottom:3px;
+}
+
+.rec-sel {
+  font-family:var(--cond);
+  font-size:20px;
+  font-weight:800;
+  letter-spacing:0.5px;
+  color:var(--text);
+}
+
+.rec-reasoning {
+  font-size:13px;
+  color:var(--muted2);
+  line-height:1.6;
+  padding-left:12px;
+  border-left:2px solid var(--border2);
+}
+
+.rec-sources {
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:4px;
+}
+
+.source-chip {
+  font-family:var(--mono);
+  font-size:9px;
+  color:var(--muted);
+  background:var(--s3);
+  border:1px solid var(--border);
+  padding:3px 7px;
+  border-radius:3px;
+}
+
+.rec-alert {
+  font-size:12px;
+  color:var(--o);
+  padding:7px 10px;
+  background:rgba(255,107,0,0.06);
+  border:1px solid rgba(255,107,0,0.15);
+  border-radius:4px;
+}
+
+.rec-right {
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  align-items:flex-end;
+  min-width:160px;
+}
+
+.stat-cluster {
+  display:flex;
+  gap:14px;
+}
+
+.stat-box { text-align:center; }
+.stat-val { font-family:var(--cond); font-size:22px; font-weight:700; letter-spacing:-0.5px; }
+.stat-lbl { font-family:var(--mono); font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-top:2px; }
+
+.conf-bar-wrap { display:flex; align-items:center; gap:8px; width:100%; }
+.conf-bar-bg { flex:1; height:5px; background:var(--s3); border-radius:3px; overflow:hidden; }
+.conf-bar-fill { height:100%; border-radius:3px; transition:width 0.6s ease; }
+.conf-label { font-family:var(--mono); font-size:10px; min-width:30px; text-align:right; }
+
+/* ═══ LOADING ═══ */
+.loading-state {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:70px 20px;
+  gap:20px;
+}
+
+.spinner {
+  width:40px; height:40px;
+  border:3px solid var(--border);
+  border-top-color:var(--g);
+  border-radius:50%;
+  animation:spin 0.7s linear infinite;
+}
+
+.loading-steps { display:flex; flex-direction:column; gap:8px; width:100%; max-width:320px; }
+
+.loading-step {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--muted);
+  padding:8px 12px;
+  border:1px solid var(--border);
+  border-radius:4px;
+  background:var(--s2);
+  transition:all 0.3s;
+}
+
+.loading-step.done { color:var(--g); border-color:rgba(0,255,135,0.2); }
+.loading-step.active { color:var(--text); border-color:var(--border2); }
+
+.step-icon { font-size:13px; }
+
+/* ═══ SKELETON ═══ */
+.skel {
+  background:linear-gradient(90deg, var(--s2) 25%, var(--s3) 50%, var(--s2) 75%);
+  background-size:400px 100%;
+  animation:shimmer 1.5s infinite;
+  border-radius:4px;
+}
+
+/* ═══ SEARCH LOG ═══ */
+.search-log {
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:14px 16px;
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--muted2);
+  line-height:1.7;
+  max-height:160px;
+  overflow-y:auto;
+}
+
+.log-line { display:flex; gap:8px; align-items:flex-start; margin-bottom:4px; }
+.log-time { color:var(--muted); flex-shrink:0; }
+.log-g { color:var(--g); }
+.log-b { color:var(--g2); }
+.log-y { color:var(--y); }
+
+/* ═══ ANALYSIS DETAIL ═══ */
+.analysis-section {
+  background:var(--s2);
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:14px 16px;
+  margin-bottom:10px;
+}
+
+.analysis-title {
+  font-family:var(--cond);
+  font-weight:700;
+  font-size:13px;
+  letter-spacing:0.5px;
+  text-transform:uppercase;
+  color:var(--muted2);
+  margin-bottom:8px;
+}
+
+.analysis-body {
+  font-size:13px;
+  line-height:1.6;
+  color:var(--text);
+}
+
+/* ═══ KELLY ═══ */
+.kelly-result {
+  background:linear-gradient(135deg, rgba(0,255,135,0.07), rgba(0,212,255,0.04));
+  border:1px solid rgba(0,255,135,0.2);
+  border-radius:6px;
+  padding:16px 18px;
+  margin-top:14px;
+}
+
+/* ═══ PROGRESS ═══ */
+.prog-row { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.prog-label { font-size:12px; width:100px; flex-shrink:0; color:var(--muted2); }
+.prog-bg { flex:1; height:5px; background:var(--s3); border-radius:3px; overflow:hidden; }
+.prog-fill { height:100%; border-radius:3px; background:var(--g); }
+.prog-val { font-family:var(--mono); font-size:10px; color:var(--muted); width:36px; text-align:right; }
+
+/* ═══ TOAST ═══ */
+.toast {
+  position:fixed; bottom:24px; right:24px;
+  background:var(--s1);
+  border:1px solid rgba(0,255,135,0.3);
+  border-radius:6px;
+  padding:14px 18px;
+  font-size:13px;
+  max-width:300px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.5);
+  z-index:9998;
+  transform:translateY(100px); opacity:0;
+  transition:all 0.25s ease;
+}
+.toast.show { transform:translateY(0); opacity:1; }
+.toast-title { font-family:var(--cond); font-weight:700; font-size:14px; letter-spacing:0.5px; color:var(--g); margin-bottom:3px; }
+
+/* ═══ DISCLAIMER ═══ */
+.disclaimer {
+  background:rgba(255,107,0,0.05);
+  border:1px solid rgba(255,107,0,0.15);
+  border-radius:6px;
+  padding:10px 14px;
+  font-size:12px;
+  color:var(--muted2);
+  line-height:1.5;
+  border-left:3px solid var(--o);
+}
+
+/* ═══ MISC ═══ */
+.divider { height:1px; background:var(--border); }
+.mono { font-family:var(--mono); }
+.muted { color:var(--muted); }
+.g { color:var(--g); }
+.r { color:var(--r); }
+.y { color:var(--y); }
+
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.grid-3-1 { display:grid; grid-template-columns:2fr 1fr; gap:16px; }
+
+::-webkit-scrollbar { width:4px; height:4px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--border2); border-radius:2px; }
+
+.alert { padding:10px 14px; border-radius:5px; font-size:13px; margin-bottom:10px; }
+.alert-warn { background:rgba(255,107,0,0.07); border:1px solid rgba(255,107,0,0.2); color:#ff9a50; }
+.alert-ok { background:rgba(0,255,135,0.06); border:1px solid rgba(0,255,135,0.2); color:var(--g); }
+.alert-info { background:rgba(0,212,255,0.06); border:1px solid rgba(0,212,255,0.2); color:var(--g2); }
+
+@media(max-width:900px){
+  .app{grid-template-columns:1fr}
+  aside{display:none}
+  .kpi-row{grid-template-columns:1fr 1fr}
+  .grid-2,.grid-3-1{grid-template-columns:1fr}
+  .rec-grid{grid-template-columns:1fr}
+  .form-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+<!-- ═══ HEADER ═══ -->
+<header>
+  <div class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="16,2 30,9 30,23 16,30 2,23 2,9" fill="none" stroke="#00ff87" stroke-width="1.5"/>
+        <polygon points="16,8 24,12 24,20 16,24 8,20 8,12" fill="rgba(0,255,135,0.1)" stroke="#00ff87" stroke-width="1"/>
+        <circle cx="16" cy="16" r="3" fill="#00ff87"/>
+      </svg>
+    </div>
+    <div>
+      <div class="logo-text">TradeEdge <span class="logo-pro">PRO</span></div>
+    </div>
+  </div>
+
+  <div class="hdr-center">
+    <div class="hdr-stat">
+      <div class="hdr-stat-label">Banca</div>
+      <div class="hdr-stat-val g" id="hdr-banca">€1.000</div>
+    </div>
+    <div class="hdr-stat">
+      <div class="hdr-stat-label">ROI</div>
+      <div class="hdr-stat-val" id="hdr-roi">—</div>
+    </div>
+    <div class="hdr-stat">
+      <div class="hdr-stat-label">Hoje P/L</div>
+      <div class="hdr-stat-val" id="hdr-dia">€0,00</div>
+    </div>
+    <div class="hdr-stat">
+      <div class="hdr-stat-label">Acerto</div>
+      <div class="hdr-stat-val" id="hdr-acerto">—</div>
+    </div>
+  </div>
+
+  <div class="hdr-right">
+    <div class="pulse-dot"></div>
+    <div class="clock" id="clock">00:00:00</div>
+  </div>
+</header>
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside>
+  <div class="nav-group">
+    <div class="nav-group-label">Análise IA</div>
+    <div class="nav-item active" onclick="goTo('recomendacoes',this)">
+      <span class="n-icon">◈</span> Recomendações
+      <span class="nav-badge" id="nav-n-rec">0</span>
+    </div>
+    <div class="nav-item" onclick="goTo('analise',this)">
+      <span class="n-icon">⊕</span> Análise Profunda
+    </div>
+    <div class="nav-item" onclick="goTo('kelly',this)">
+      <span class="n-icon">◎</span> Calculadora Kelly
+    </div>
+  </div>
+
+  <div class="nav-divider"></div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">Gestão</div>
+    <div class="nav-item" onclick="goTo('dashboard',this)">
+      <span class="n-icon">⬡</span> Dashboard
+    </div>
+    <div class="nav-item" onclick="goTo('aposta',this)">
+      <span class="n-icon">＋</span> Registar Aposta
+    </div>
+    <div class="nav-item" onclick="goTo('historico',this)">
+      <span class="n-icon">▤</span> Histórico
+    </div>
+  </div>
+
+  <div class="nav-divider"></div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">Sistema</div>
+    <div class="nav-item" onclick="goTo('regras',this)">
+      <span class="n-icon">⊟</span> Regras & Filtros
+    </div>
+  </div>
+
+  <!-- sidebar banca mini -->
+  <div style="margin-top:auto;padding:16px 20px">
+    <div style="background:var(--s2);border:1px solid var(--border);border-radius:6px;padding:12px 14px">
+      <div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px">Saúde da Banca</div>
+      <div id="sidebar-health"></div>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══ MAIN ═══ -->
+<main>
+
+  <!-- ════════ RECOMENDAÇÕES ════════ -->
+  <div class="page active" id="page-recomendacoes">
+    <div class="page-hdr">
+      <div>
+        <div class="page-title">Recomendações IA</div>
+        <div class="page-sub" id="rec-sub">A IA pesquisa a web em tempo real antes de recomendar</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <div class="tabs">
+          <div class="tab active" onclick="filtroRec('todas',this)">Todas</div>
+          <div class="tab" onclick="filtroRec('pre',this)">Pré-Jogo</div>
+          <div class="tab" onclick="filtroRec('live',this)">In-Play</div>
+          <div class="tab" onclick="filtroRec('high',this)">Alta Conf.</div>
+        </div>
+        <button class="btn btn-g" id="btn-analisar" onclick="gerarRecs()">⚡ Analisar Agora</button>
+      </div>
+    </div>
+
+    <div class="disclaimer">
+      ⚠ A IA usa pesquisa web em tempo real (notícias, lesões, forma recente) para fundamentar cada recomendação. Ainda assim, apostas desportivas envolvem risco inerente. Gere sempre a banca com disciplina.
+    </div>
+
+    <div id="recs-wrap">
+      <div class="card">
+        <div class="loading-state">
+          <div style="font-size:48px;line-height:1">⚡</div>
+          <div>
+            <div class="page-title" style="font-size:20px;text-align:center">Motor IA Pronto</div>
+            <div style="font-size:13px;color:var(--muted2);text-align:center;margin-top:6px;max-width:400px">
+              Clica <strong style="color:var(--g)">Analisar Agora</strong> — a IA pesquisa lesões, forma recente, odds e contexto tático em tempo real para todas as ligas disponíveis hoje.
+            </div>
+          </div>
+          <button class="btn btn-g" onclick="gerarRecs()" style="font-size:15px;padding:12px 28px">⚡ Iniciar Análise Completa</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ ANÁLISE PROFUNDA ════════ -->
+  <div class="page" id="page-analise">
+    <div class="page-hdr">
+      <div>
+        <div class="page-title">Análise Profunda</div>
+        <div class="page-sub">Pede à IA uma análise detalhada de qualquer jogo específico</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-hdr"><span class="card-title">Parâmetros</span></div>
+        <div class="card-body">
+          <div class="form-grid">
+            <div class="form-group full">
+              <label>Jogo (ex: Benfica vs Porto)</label>
+              <input type="text" id="a-jogo" placeholder="Equipa Casa vs Equipa Fora">
+            </div>
+            <div class="form-group">
+              <label>Liga / Competição</label>
+              <input type="text" id="a-liga" placeholder="Primeira Liga, Champions...">
+            </div>
+            <div class="form-group">
+              <label>Data do Jogo</label>
+              <input type="date" id="a-data">
+            </div>
+            <div class="form-group">
+              <label>Mercado de Interesse</label>
+              <select id="a-mercado">
+                <option>Todos os mercados</option>
+                <option>1X2</option>
+                <option>Over/Under 2.5</option>
+                <option>Ambas Marcam</option>
+                <option>Asian Handicap</option>
+                <option>Intervalo/Final</option>
+              </select>
+            </div>
+            <div class="form-group full">
+              <label>Contexto adicional (opcional)</label>
+              <textarea id="a-contexto" rows="2" placeholder="Ex: Benfica precisa de ganhar para passar de fase..."></textarea>
+            </div>
+          </div>
+          <button class="btn btn-g" onclick="analiseProfunda()" id="btn-analise" style="width:100%;margin-top:4px;justify-content:center">🔍 Analisar este Jogo</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><span class="card-title">Log de Pesquisa</span></div>
+        <div class="card-body" style="padding:12px">
+          <div class="search-log" id="search-log">
+            <div style="color:var(--muted)">Aguardando análise...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="analise-result"></div>
+  </div>
+
+  <!-- ════════ KELLY ════════ -->
+  <div class="page" id="page-kelly">
+    <div class="page-hdr">
+      <div><div class="page-title">Calculadora Kelly</div><div class="page-sub">Stake ideal baseado no Critério de Kelly</div></div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-hdr"><span class="card-title">Critério de Kelly</span></div>
+        <div class="card-body">
+          <div class="alert alert-info" style="margin-bottom:14px">
+            <strong>Kelly</strong> = (odd × prob − 1) / (odd − 1) × banca × fração<br>
+            <span style="font-size:11px;opacity:0.7">Usa ½ Kelly para reduzir volatilidade sem perder o edge.</span>
+          </div>
+          <div class="form-grid">
+            <div class="form-group"><label>Odd da Aposta</label><input type="number" id="k-odd" step="0.01" min="1.01" placeholder="2.10" oninput="calcKelly()"></div>
+            <div class="form-group"><label>Prob. Estimada (%)</label><input type="number" id="k-prob" min="1" max="99" placeholder="55" oninput="calcKelly()"></div>
+            <div class="form-group"><label>Banca (€)</label><input type="number" id="k-banca" placeholder="1000" oninput="calcKelly()"></div>
+            <div class="form-group"><label>Fração Kelly</label>
+              <select id="k-frac" onchange="calcKelly()">
+                <option value="1">Kelly Completo</option>
+                <option value="0.5" selected>½ Kelly (recomendado)</option>
+                <option value="0.25">¼ Kelly (conservador)</option>
+                <option value="0.1">1/10 Kelly (ultra-seguro)</option>
+              </select>
+            </div>
+          </div>
+          <div class="kelly-result" id="k-result"><div class="muted" style="font-size:13px">Preenche os campos para calcular</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><span class="card-title">Value Calculator</span></div>
+        <div class="card-body">
+          <div class="form-grid" style="margin-bottom:14px">
+            <div class="form-group"><label>Odd Mercado</label><input type="number" id="v-odd" step="0.01" placeholder="2.10" oninput="calcValue()"></div>
+            <div class="form-group"><label>Prob. Real (%)</label><input type="number" id="v-prob" min="1" max="99" placeholder="55" oninput="calcValue()"></div>
+          </div>
+          <div class="kelly-result" id="v-result"><div class="muted" style="font-size:13px">Preenche os campos para calcular</div></div>
+          <div style="margin-top:16px">
+            <div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px">Comparação de Odd Máxima</div>
+            <div id="v-fairodds" class="muted" style="font-size:12px">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ DASHBOARD ════════ -->
+  <div class="page" id="page-dashboard">
+    <div class="page-hdr">
+      <div><div class="page-title">Dashboard</div><div class="page-sub">Visão geral da performance</div></div>
+      <button class="btn btn-g btn-sm" onclick="goTo('aposta',document.querySelector('[onclick*=aposta]'))">＋ Registar</button>
+    </div>
+
+    <div class="kpi-row">
+      <div class="kpi" style="--kc:var(--g)">
+        <div class="kpi-label">Banca Atual</div>
+        <div class="kpi-val g" id="d-banca">€1.000,00</div>
+        <div class="kpi-meta" id="d-delta">—</div>
+      </div>
+      <div class="kpi" style="--kc:var(--g2)">
+        <div class="kpi-label">Total Apostas</div>
+        <div class="kpi-val" id="d-total" style="color:var(--g2)">0</div>
+        <div class="kpi-meta" id="d-abertas">0 em aberto</div>
+      </div>
+      <div class="kpi" style="--kc:var(--g)">
+        <div class="kpi-label">Taxa Acerto</div>
+        <div class="kpi-val g" id="d-taxa">—</div>
+        <div class="kpi-meta" id="d-wl">0W / 0L</div>
+      </div>
+      <div class="kpi" style="--kc:var(--g)">
+        <div class="kpi-label">ROI</div>
+        <div class="kpi-val g" id="d-roi">—</div>
+        <div class="kpi-meta" id="d-lucro">Lucro: €0,00</div>
+      </div>
+      <div class="kpi" style="--kc:var(--y)">
+        <div class="kpi-label">Hoje P/L</div>
+        <div class="kpi-val" id="d-dia">€0,00</div>
+        <div class="kpi-meta" id="d-dia-meta">—</div>
+      </div>
+    </div>
+
+    <div class="grid-3-1">
+      <div class="card">
+        <div class="card-hdr"><span class="card-title">Últimas Apostas</span></div>
+        <table class="tbl">
+          <thead><tr><th>Data</th><th>Jogo</th><th>Sel.</th><th>Odd</th><th>Stake</th><th>P/L</th><th>Resultado</th><th></th></tr></thead>
+          <tbody id="d-tbody"><tr><td colspan="8" style="text-align:center;color:var(--muted);padding:24px">Sem apostas</td></tr></tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><span class="card-title">Por Mercado</span></div>
+        <div class="card-body" id="d-mercados"><div class="muted" style="font-size:12px">Sem dados</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ REGISTAR ════════ -->
+  <div class="page" id="page-aposta">
+    <div class="page-hdr">
+      <div><div class="page-title">Registar Aposta</div><div class="page-sub">Valida antes de colocar na BDM Bet</div></div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-hdr"><span class="card-title">Detalhes</span></div>
+        <div class="card-body">
+          <div class="form-grid">
+            <div class="form-group"><label>Data</label><input type="date" id="f-data"></div>
+            <div class="form-group"><label>Hora</label><input type="time" id="f-hora"></div>
+            <div class="form-group full"><label>Jogo</label><input type="text" id="f-jogo" placeholder="ex: Arsenal vs Chelsea" oninput="updateFormVal()"></div>
+            <div class="form-group"><label>Liga</label><input type="text" id="f-liga" placeholder="Premier League"></div>
+            <div class="form-group"><label>Tipo</label>
+              <select id="f-tipo"><option value="pre">Pré-jogo</option><option value="live">In-Play</option></select>
+            </div>
+            <div class="form-group"><label>Mercado</label>
+              <select id="f-mercado">
+                <option>1X2</option><option>Dupla Hipótese</option><option>Over/Under 2.5</option>
+                <option>Over/Under 1.5</option><option>Ambas Marcam</option><option>Asian Handicap</option><option>Outro</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Seleção</label><input type="text" id="f-selecao" placeholder="Casa, Over 2.5..." oninput="updateFormVal()"></div>
+            <div class="form-group"><label>Odd</label><input type="number" id="f-odd" step="0.01" min="1.01" placeholder="1.85" oninput="updateFormVal()"></div>
+            <div class="form-group"><label>Stake (€)</label><input type="number" id="f-stake" step="0.50" min="0.50" placeholder="25.00" oninput="updateFormVal()"></div>
+            <div class="form-group"><label>% da Banca</label><input type="text" id="f-pct" readonly style="color:var(--muted)"></div>
+            <div class="form-group full"><label>Raciocínio / Edge</label><textarea id="f-notas" rows="2" placeholder="Porque é esta uma aposta com value? Que análise a sustenta?" oninput="updateFormVal()"></textarea></div>
+          </div>
+          <div id="f-alert" style="margin-top:10px"></div>
+          <div style="display:flex;gap:8px;margin-top:14px">
+            <button class="btn btn-g" onclick="registar()" style="flex:1;justify-content:center">✓ Validar e Registar</button>
+            <button class="btn btn-outline" onclick="limparForm()">Limpar</button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><span class="card-title">Validação em Tempo Real</span></div>
+        <div class="card-body"><div id="f-val"><div class="muted" style="font-size:13px">Preenche os campos para ver a validação...</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ HISTÓRICO ════════ -->
+  <div class="page" id="page-historico">
+    <div class="page-hdr">
+      <div><div class="page-title">Histórico</div><div class="page-sub">Todas as apostas registadas</div></div>
+      <div style="display:flex;gap:8px">
+        <select id="filtro-r" onchange="renderHist()" style="padding:8px 12px;font-size:13px;width:auto">
+          <option value="todos">Todos</option><option value="WIN">Ganhas</option><option value="LOSS">Perdidas</option><option value="PENDING">Em Aberto</option>
+        </select>
+        <button class="btn btn-outline btn-sm" onclick="exportCSV()">↓ CSV</button>
+      </div>
+    </div>
+    <div class="card">
+      <table class="tbl">
+        <thead><tr><th>Data</th><th>Jogo</th><th>Mercado</th><th>Sel.</th><th>Odd</th><th>Stake</th><th>P/L</th><th>Tipo</th><th>Resultado</th><th></th></tr></thead>
+        <tbody id="h-tbody"><tr><td colspan="10" style="text-align:center;color:var(--muted);padding:32px">Sem apostas</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ════════ REGRAS ════════ -->
+  <div class="page" id="page-regras">
+    <div class="page-hdr">
+      <div><div class="page-title">Regras & Filtros</div><div class="page-sub">O sistema e a IA respeitam estes parâmetros</div></div>
+      <button class="btn btn-g" onclick="saveRules()">✓ Guardar</button>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-hdr"><span class="card-title">Gestão de Banca</span></div>
+        <div class="card-body">
+          <div class="form-grid">
+            <div class="form-group"><label>Banca Inicial (€)</label><input type="number" id="r-banca" placeholder="1000"></div>
+            <div class="form-group"><label>Stake Máx. (%)</label><input type="number" id="r-stake" placeholder="5"></div>
+            <div class="form-group"><label>Stop Loss Diário (€)</label><input type="number" id="r-stop" placeholder="50"></div>
+            <div class="form-group"><label>Profit Target (€)</label><input type="number" id="r-profit" placeholder="100"></div>
+            <div class="form-group"><label>Odd Mínima</label><input type="number" id="r-oddmin" step="0.01" placeholder="1.40"></div>
+            <div class="form-group"><label>Odd Máxima</label><input type="number" id="r-oddmax" step="0.01" placeholder="5.00"></div>
+            <div class="form-group"><label>Máx. Apostas/Dia</label><input type="number" id="r-maxdia" placeholder="5"></div>
+            <div class="form-group"><label>Confiança Mín. IA (%)</label><input type="number" id="r-confmin" placeholder="60"></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><span class="card-title">Disciplina Automática</span></div>
+        <div class="card-body">
+          <div class="rule-row"><div><div class="rule-title">Bloquear após 3 perdas seguidas</div><div class="rule-desc">Pausa automática de 24h após sequência negativa</div></div><div class="toggle on" id="t1" onclick="this.classList.toggle('on')"></div></div>
+          <div class="rule-row"><div><div class="rule-title">Bloquear ao atingir stop loss</div><div class="rule-desc">Impede apostas adicionais no dia</div></div><div class="toggle on" id="t2" onclick="this.classList.toggle('on')"></div></div>
+          <div class="rule-row"><div><div class="rule-title">Exigir raciocínio documentado</div><div class="rule-desc">Obriga a escrever o edge antes de registar</div></div><div class="toggle on" id="t3" onclick="this.classList.toggle('on')"></div></div>
+          <div class="rule-row"><div><div class="rule-title">Filtrar IA por confiança mínima</div><div class="rule-desc">Só mostra recomendações acima do limiar</div></div><div class="toggle on" id="t4" onclick="this.classList.toggle('on')"></div></div>
+          <div class="rule-row"><div><div class="rule-title">Alertar sobre value negativo</div><div class="rule-desc">Avisa quando a odd não tem edge matemático</div></div><div class="toggle on" id="t5" onclick="this.classList.toggle('on')"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<div class="toast" id="toast"><div class="toast-title" id="t-title"></div><div id="t-msg"></div></div>
+
+<script>
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let S = JSON.parse(localStorage.getItem('te_pro')||'null') || {
+  banca: 1000,
+  bancaIni: 1000,
+  apostas: [],
+  regras: {
+    stakeMax: 5, stopLoss: 50, profitTarget: 100,
+    oddMin: 1.40, oddMax: 5.00, maxDia: 5, confMin: 60,
+    b3loss:true, bStop:true, notas:true, filtroConf:true, alertVal:true
+  }
+};
+let recsData = [];
+let recFiltro = 'todas';
+
+function save(){ localStorage.setItem('te_pro', JSON.stringify(S)); }
+function fmt(n){ return '€'+parseFloat(n||0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,'.'); }
+function fmtN(n){ return (n>=0?'+':'')+parseFloat(n).toFixed(1)+'%'; }
+
+// ═══════════════════════════════════════════
+// CLOCK & NAV
+// ═══════════════════════════════════════════
+setInterval(()=>{ document.getElementById('clock').textContent = new Date().toLocaleTimeString('pt-PT'); },1000);
+document.getElementById('clock').textContent = new Date().toLocaleTimeString('pt-PT');
+
+function goTo(page, el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  if(el) el.classList.add('active');
+  if(page==='dashboard') renderDashboard();
+  if(page==='historico') renderHist();
+  if(page==='aposta') initForm();
+  if(page==='regras') initRules();
+  if(page==='kelly'){ document.getElementById('k-banca').value=S.banca; }
+  if(page==='analise'){ document.getElementById('a-data').value=new Date().toISOString().split('T')[0]; }
+}
+
+function toast(title,msg,d=3500){
+  document.getElementById('t-title').textContent=title;
+  document.getElementById('t-msg').textContent=msg;
+  const t=document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),d);
+}
+
+// ═══════════════════════════════════════════
+// RECOMENDAÇÕES IA (com web search)
+// ═══════════════════════════════════════════
+async function gerarRecs(){
+  const btn = document.getElementById('btn-analisar');
+  btn.disabled=true; btn.textContent='⏳ A analisar...';
+
+  const hoje = new Date().toLocaleDateString('pt-PT',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const diaSemana = new Date().toLocaleDateString('pt-PT',{weekday:'long'});
+  const bancaAtual = S.banca;
+  const stakeMax = (bancaAtual * S.regras.stakeMax / 100).toFixed(2);
+
+  document.getElementById('recs-wrap').innerHTML = `
+    <div class="card">
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <div style="text-align:center">
+          <div style="font-family:var(--cond);font-size:17px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">IA a Pesquisar em Tempo Real</div>
+          <div style="font-size:12px;color:var(--muted2)">Notícias · Lesões · Forma recente · Odds · Contexto tático</div>
+        </div>
+        <div class="loading-steps" id="load-steps">
+          <div class="loading-step active" id="ls1"><span class="step-icon">🔍</span> Pesquisando jogos de hoje...</div>
+          <div class="loading-step" id="ls2"><span class="step-icon">📋</span> Verificando lesões e indisponibilidades...</div>
+          <div class="loading-step" id="ls3"><span class="step-icon">📊</span> Analisando forma recente e estatísticas...</div>
+          <div class="loading-step" id="ls4"><span class="step-icon">💰</span> Avaliando odds e identificando value...</div>
+          <div class="loading-step" id="ls5"><span class="step-icon">🧠</span> Gerando recomendações finais...</div>
+        </div>
+      </div>
+    </div>`;
+
+  // animate steps
+  const steps = ['ls1','ls2','ls3','ls4','ls5'];
+  let si=0;
+  const stepInterval = setInterval(()=>{
+    if(si>0) document.getElementById(steps[si-1]).classList.replace('active','done');
+    if(si<steps.length){ document.getElementById(steps[si]).classList.add('active'); si++; }
+    else clearInterval(stepInterval);
+  }, 1400);
+
+  const prompt = `Hoje é ${hoje} (${diaSemana}). És um especialista em value betting e trading desportivo com acesso a dados em tempo real.
+
+USA a ferramenta de pesquisa web para:
+1. Encontrar jogos de futebol programados para HOJE em múltiplas ligas (Premier League, La Liga, Bundesliga, Serie A, Ligue 1, Primeira Liga, Champions League, Europa League, Conference League, MLS, Brasileirão, etc.)
+2. Verificar lesões, suspensões e indisponibilidades das equipas
+3. Analisar a forma recente (últimos 5 jogos) de cada equipa relevante
+4. Encontrar as odds actuais nas principais casas de apostas
+5. Identificar contexto tático (motivação, fadiga de calendário, importância do jogo)
+
+Com base nessa pesquisa real, gera 6 recomendações de apostas:
+- 3 apostas pré-jogo (jogos que ainda não começaram)
+- 3 apostas in-play (cenários táticos que tipicamente surgem ao vivo neste tipo de jogos)
+
+Banca do utilizador: €${bancaAtual.toFixed(2)} | Stake máximo permitido: €${stakeMax}
+Odds permitidas: ${S.regras.oddMin} a ${S.regras.oddMax}
+
+Responde APENAS com JSON válido sem markdown. Estrutura obrigatória:
+{
+  "data_analise": "${hoje}",
+  "fontes_consultadas": ["lista de fontes/sites pesquisados"],
+  "resumo_pesquisa": "Resumo em 2 frases do que foi encontrado na pesquisa de hoje",
+  "recomendacoes": [
+    {
+      "id": 1,
+      "tipo": "pre",
+      "liga": "Nome Liga",
+      "jogo": "Equipa A vs Equipa B",
+      "hora": "15:00",
+      "mercado": "Nome mercado",
+      "selecao": "Seleção exata",
+      "odd": 1.85,
+      "confianca": 72,
+      "value_pct": 9.5,
+      "stake_sugerido": 25.00,
+      "analise_pre_jogo": {
+        "forma_casa": "Últimos 5 jogos da equipa casa com resultados",
+        "forma_fora": "Últimos 5 jogos da equipa fora com resultados",
+        "h2h": "Confrontos diretos recentes relevantes",
+        "lesoes_suspensoes": "Jogadores ausentes ou em dúvida",
+        "contexto_tatico": "Motivação, importância do jogo, estilo de jogo",
+        "fundamentacao_value": "Porquê esta odd tem value matemático"
+      },
+      "raciocinio_resumido": "Resumo técnico em 2-3 frases para display rápido",
+      "alertas": "Principal risco ou fator de incerteza",
+      "fontes": ["fonte1", "fonte2"]
+    }
+  ]
+}`;
+
+  try {
+    clearInterval(stepInterval);
+    steps.forEach(s=>{
+      document.getElementById(s).classList.remove('active');
+      document.getElementById(s).classList.add('done');
+    });
+
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        tools:[{type:'web_search_20250305',name:'web_search'}],
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+
+    const data = await res.json();
+    const textBlock = data.content?.find(b=>b.type==='text');
+    const text = textBlock?.text || '';
+    const clean = text.replace(/```json[\s\S]*?```|```[\s\S]*?```/g, match => {
+      const inner = match.replace(/```json|```/g,'').trim();
+      return inner;
+    }).trim();
+
+    let parsed;
+    try {
+      const jsonMatch = clean.match(/\{[\s\S]*\}/);
+      parsed = JSON.parse(jsonMatch ? jsonMatch[0] : clean);
+    } catch(e) {
+      parsed = JSON.parse(clean);
+    }
+
+    recsData = parsed.recomendacoes || [];
+    document.getElementById('nav-n-rec').textContent = recsData.length;
+    document.getElementById('rec-sub').textContent =
+      `${recsData.length} recomendações · ${parsed.data_analise || hoje} · ${parsed.resumo_pesquisa || 'Análise com dados em tempo real'}`;
+
+    renderRecs();
+    updateHeader();
+    toast('✓ Análise Completa', `${recsData.length} recomendações geradas com pesquisa em tempo real.`);
+  } catch(e) {
+    clearInterval(stepInterval);
+    document.getElementById('recs-wrap').innerHTML = `
+      <div class="card"><div class="card-body">
+        <div class="alert alert-warn">⚠ Erro na análise: ${e.message}</div>
+        <button class="btn btn-outline" onclick="gerarRecs()" style="margin-top:12px">↺ Tentar novamente</button>
+      </div></div>`;
+  }
+
+  btn.disabled=false; btn.textContent='↺ Nova Análise';
+}
+
+function filtroRec(tipo, el){
+  recFiltro=tipo;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  if(recsData.length) renderRecs();
+}
+
+function renderRecs(){
+  const r = S.regras;
+  let filtered = recsData;
+  if(recFiltro==='pre') filtered=recsData.filter(r=>r.tipo==='pre');
+  else if(recFiltro==='live') filtered=recsData.filter(r=>r.tipo==='live');
+  else if(recFiltro==='high') filtered=recsData.filter(r=>r.confianca>=70);
+
+  if(!filtered.length){
+    document.getElementById('recs-wrap').innerHTML=`<div class="card"><div class="card-body muted" style="text-align:center;padding:32px">Sem recomendações para este filtro.</div></div>`;
+    return;
+  }
+
+  document.getElementById('recs-wrap').innerHTML = filtered.map((rec,i)=>{
+    const cc = rec.confianca>=70?'high':rec.confianca>=58?'med':'low';
+    const cv = rec.confianca>=70?'var(--g)':rec.confianca>=58?'var(--y)':'var(--muted)';
+    const bloq = r.filtroConf && rec.confianca < r.confMin;
+    const stk = Math.min(rec.stake_sugerido||25, S.banca*r.stakeMax/100);
+    const pot = stk*(rec.odd-1);
+    const vClass = rec.value_pct>=10?'b-g':rec.value_pct>=5?'b-y':'b-m';
+
+    const analise = rec.analise_pre_jogo || {};
+
+    return `<div class="rec-card c-${cc}" style="animation-delay:${i*0.06}s;${bloq?'opacity:0.45':''}">
+      <div class="rec-top">
+        <div style="flex:1;min-width:180px">
+          <div class="rec-match-name">${rec.jogo}</div>
+          <div class="rec-league">${rec.liga} · ${rec.hora||''}</div>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+          <span class="badge ${rec.tipo==='live'?'b-live':'b-b'}">${rec.tipo==='live'?'⬤ IN-PLAY':'PRÉ-JOGO'}</span>
+          <span class="badge" style="background:rgba(${rec.confianca>=70?'0,255,135':rec.confianca>=58?'255,214,0':'74,101,128'},0.1);color:${cv};border:1px solid ${cv}33">${rec.confianca}% CONFIANÇA</span>
+          <span class="badge ${vClass}">+${rec.value_pct}% VALUE</span>
+        </div>
+      </div>
+      <div class="rec-grid">
+        <div class="rec-left">
+          <div class="rec-selection-row">
+            <div>
+              <div class="rec-market-label">${rec.mercado}</div>
+              <div class="rec-sel">${rec.selecao}</div>
+            </div>
+            <div style="height:32px;width:1px;background:var(--border)"></div>
+            <div style="font-size:12px;color:var(--muted2);max-width:240px">${rec.raciocinio_resumido||''}</div>
+          </div>
+
+          ${analise.forma_casa || analise.lesoes_suspensoes ? `
+          <details style="cursor:pointer">
+            <summary style="font-family:var(--mono);font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;list-style:none;cursor:pointer">
+              ▸ Ver análise completa
+            </summary>
+            <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
+              ${analise.forma_casa?`<div class="analysis-section"><div class="analysis-title">📊 Forma Recente</div><div class="analysis-body"><strong>Casa:</strong> ${analise.forma_casa}<br><strong>Fora:</strong> ${analise.forma_fora||'—'}</div></div>`:''}
+              ${analise.h2h?`<div class="analysis-section"><div class="analysis-title">⚔ Confrontos Diretos</div><div class="analysis-body">${analise.h2h}</div></div>`:''}
+              ${analise.lesoes_suspensoes?`<div class="analysis-section"><div class="analysis-title">🏥 Lesões / Suspensões</div><div class="analysis-body">${analise.lesoes_suspensoes}</div></div>`:''}
+              ${analise.contexto_tatico?`<div class="analysis-section"><div class="analysis-title">🎯 Contexto Tático</div><div class="analysis-body">${analise.contexto_tatico}</div></div>`:''}
+              ${analise.fundamentacao_value?`<div class="analysis-section"><div class="analysis-title">💰 Fundamentação do Value</div><div class="analysis-body">${analise.fundamentacao_value}</div></div>`:''}
+            </div>
+          </details>` : ''}
+
+          ${rec.alertas?`<div class="rec-alert">⚠ ${rec.alertas}</div>`:''}
+
+          ${rec.fontes&&rec.fontes.length?`
+          <div class="rec-sources">
+            <span style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;align-self:center">Fontes:</span>
+            ${rec.fontes.map(f=>`<span class="source-chip">${f}</span>`).join('')}
+          </div>`:''}
+        </div>
+
+        <div class="rec-right">
+          <div class="stat-cluster">
+            <div class="stat-box">
+              <div class="stat-val mono">${parseFloat(rec.odd).toFixed(2)}</div>
+              <div class="stat-lbl">Odd</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-val g">${fmt(stk)}</div>
+              <div class="stat-lbl">Stake</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-val g">+${fmt(pot)}</div>
+              <div class="stat-lbl">Potencial</div>
+            </div>
+          </div>
+
+          <div class="conf-bar-wrap">
+            <div class="conf-bar-bg"><div class="conf-bar-fill" style="width:${rec.confianca}%;background:${cv}"></div></div>
+            <div class="conf-label" style="color:${cv}">${rec.confianca}%</div>
+          </div>
+
+          ${bloq
+            ? `<div style="font-family:var(--mono);font-size:10px;color:var(--r);text-align:right">⛔ ABAIXO DO MÍNIMO<br>${r.confMin}% exigido</div>`
+            : `<button class="btn btn-g btn-sm" onclick="preencherRec(${JSON.stringify(rec).replace(/"/g,'&quot;')})">+ Registar Aposta</button>`
+          }
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function preencherRec(rec){
+  goTo('aposta',document.querySelector('[onclick*=aposta]'));
+  setTimeout(()=>{
+    document.getElementById('f-jogo').value=rec.jogo;
+    document.getElementById('f-liga').value=rec.liga||'';
+    document.getElementById('f-selecao').value=rec.selecao;
+    document.getElementById('f-odd').value=rec.odd;
+    document.getElementById('f-tipo').value=rec.tipo;
+    const stk=Math.min(rec.stake_sugerido||25,S.banca*S.regras.stakeMax/100);
+    document.getElementById('f-stake').value=stk.toFixed(2);
+    const analise=rec.analise_pre_jogo||{};
+    const notas=[rec.raciocinio_resumido||'',analise.fundamentacao_value||'',rec.alertas?'⚠ '+rec.alertas:''].filter(Boolean).join('\n');
+    document.getElementById('f-notas').value=notas;
+    try{document.getElementById('f-mercado').value=rec.mercado;}catch(e){}
+    updateFormVal();
+    toast('Preenchida','Confirma os dados e regista na BDM Bet.');
+  },100);
+}
+
+// ═══════════════════════════════════════════
+// ANÁLISE PROFUNDA
+// ═══════════════════════════════════════════
+async function analiseProfunda(){
+  const jogo=document.getElementById('a-jogo').value.trim();
+  const liga=document.getElementById('a-liga').value.trim();
+  if(!jogo){toast('⚠ Atenção','Insere o nome do jogo.'); return;}
+
+  const btn=document.getElementById('btn-analise');
+  btn.disabled=true; btn.textContent='⏳ A pesquisar...';
+
+  const log=document.getElementById('search-log');
+  const addLog=(type,msg)=>{
+    const t=new Date().toLocaleTimeString('pt-PT');
+    log.innerHTML+=`<div class="log-line"><span class="log-time">[${t}]</span><span class="log-${type}">${msg}</span></div>`;
+    log.scrollTop=log.scrollHeight;
+  };
+
+  log.innerHTML='';
+  addLog('b','Iniciando análise profunda...');
+  addLog('y',`Pesquisando: ${jogo}`);
+
+  document.getElementById('analise-result').innerHTML=`<div class="card"><div class="loading-state"><div class="spinner"></div><div style="font-family:var(--mono);font-size:12px;color:var(--muted2)">A IA está a pesquisar dados em tempo real sobre este jogo...</div></div></div>`;
+
+  const mercado=document.getElementById('a-mercado').value;
+  const contexto=document.getElementById('a-contexto').value;
+
+  const prompt=`Analisa em profundidade o jogo: ${jogo}${liga?' da '+liga:''}.
+
+USA a ferramenta web_search extensivamente para pesquisar:
+1. Estatísticas detalhadas das duas equipas (últimas 10 jornadas)
+2. Confrontos diretos (H2H) históricos, especialmente em casa/fora
+3. Lesões, suspensões e dúvidas para este jogo específico
+4. Declarações dos treinadores na conferência de imprensa
+5. Tabela classificativa e contexto de importância do jogo
+6. Odds actuais em múltiplas casas de apostas (mínimo 3 casas)
+7. Estatísticas avançadas: xG, pressão, posse, etc.
+${mercado!=='Todos os mercados'?`8. Foca especialmente no mercado: ${mercado}`:''}
+${contexto?`Contexto adicional: ${contexto}`:''}
+
+Gera uma análise completa em JSON:
+{
+  "jogo": "${jogo}",
+  "liga": "${liga||'—'}",
+  "data_analise": "${new Date().toLocaleDateString('pt-PT')}",
+  "fontes": ["lista de sites pesquisados"],
+  "classificacao": {
+    "equipa_casa": "posição e pontos",
+    "equipa_fora": "posição e pontos",
+    "contexto_tabela": "descrição da importância"
+  },
+  "forma_recente": {
+    "casa_ultimos5": "resultado de cada jogo com golos",
+    "fora_ultimos5": "resultado de cada jogo com golos",
+    "casa_em_casa": "registo em casa na época",
+    "fora_fora": "registo fora na época"
+  },
+  "h2h": {
+    "ultimos5": "resultados dos últimos 5 duelos",
+    "tendencia": "tendência dos confrontos diretos"
+  },
+  "baixas": {
+    "casa": "lesionados e suspensos",
+    "fora": "lesionados e suspensos"
+  },
+  "stats_avancadas": {
+    "xg_casa": "xG médio por jogo",
+    "xg_fora": "xG médio por jogo",
+    "outros": "outras stats relevantes"
+  },
+  "odds_mercado": {
+    "1": "odd casa",
+    "x": "odd empate",
+    "2": "odd fora",
+    "outras_odds": "odds de outros mercados relevantes",
+    "melhor_casa_apostas": "qual a casa com melhor odd"
+  },
+  "recomendacoes": [
+    {
+      "mercado": "nome",
+      "selecao": "seleção",
+      "odd_sugerida": 1.85,
+      "confianca": 72,
+      "value_pct": 8.5,
+      "justificacao": "fundamentação detalhada"
+    }
+  ],
+  "risco_geral": "BAIXO/MÉDIO/ALTO",
+  "nota_final": "resumo executivo da análise"
+}`;
+
+  try {
+    addLog('y','Consultando web_search...');
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        tools:[{type:'web_search_20250305',name:'web_search'}],
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+
+    const data=await res.json();
+    addLog('g','Pesquisa concluída. Processando dados...');
+
+    const textBlock=data.content?.find(b=>b.type==='text');
+    const text=textBlock?.text||'';
+    const jsonMatch=text.match(/\{[\s\S]*\}/);
+    const parsed=JSON.parse(jsonMatch?jsonMatch[0]:text);
+
+    if(parsed.fontes) parsed.fontes.forEach(f=>addLog('b',`✓ Fonte: ${f}`));
+    addLog('g','Análise completa.');
+
+    renderAnaliseProfunda(parsed);
+    toast('✓ Análise Profunda',`${jogo} — análise completa gerada.`);
+  } catch(e) {
+    addLog('r','Erro: '+e.message);
+    document.getElementById('analise-result').innerHTML=`<div class="card"><div class="card-body"><div class="alert alert-warn">⚠ Erro na análise: ${e.message}</div></div></div>`;
+  }
+
+  btn.disabled=false; btn.textContent='🔍 Analisar este Jogo';
+}
+
+function renderAnaliseProfunda(d){
+  const riscoColor = d.risco_geral==='BAIXO'?'var(--g)':d.risco_geral==='MÉDIO'?'var(--y)':'var(--r)';
+
+  document.getElementById('analise-result').innerHTML=`
+  <div class="card">
+    <div class="card-hdr">
+      <span class="card-title">${d.jogo} — Análise Profunda</span>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span class="badge b-m">${d.data_analise}</span>
+        <span class="badge" style="color:${riscoColor};background:${riscoColor}15;border:1px solid ${riscoColor}33">RISCO ${d.risco_geral||'—'}</span>
+      </div>
+    </div>
+    <div class="card-body">
+      ${d.nota_final?`<div class="alert alert-info" style="margin-bottom:16px"><strong>📋 Sumário:</strong> ${d.nota_final}</div>`:''}
+
+      <div class="grid-2" style="gap:12px;margin-bottom:16px">
+        <div class="analysis-section">
+          <div class="analysis-title">📊 Forma Recente</div>
+          <div class="analysis-body">
+            <strong style="color:var(--muted2)">Casa (em casa):</strong> ${d.forma_recente?.casa_em_casa||'—'}<br>
+            <strong style="color:var(--muted2)">Casa (últ. 5):</strong> ${d.forma_recente?.casa_ultimos5||'—'}<br><br>
+            <strong style="color:var(--muted2)">Fora (fora):</strong> ${d.forma_recente?.fora_fora||'—'}<br>
+            <strong style="color:var(--muted2)">Fora (últ. 5):</strong> ${d.forma_recente?.fora_ultimos5||'—'}
+          </div>
+        </div>
+        <div class="analysis-section">
+          <div class="analysis-title">⚔ Confrontos Diretos</div>
+          <div class="analysis-body">
+            ${d.h2h?.ultimos5||'—'}<br><br>
+            <strong style="color:var(--muted2)">Tendência:</strong> ${d.h2h?.tendencia||'—'}
+          </div>
+        </div>
+        <div class="analysis-section">
+          <div class="analysis-title">🏥 Baixas</div>
+          <div class="analysis-body">
+            <strong style="color:var(--muted2)">Casa:</strong> ${d.baixas?.casa||'Sem informação'}<br>
+            <strong style="color:var(--muted2)">Fora:</strong> ${d.baixas?.fora||'Sem informação'}
+          </div>
+        </div>
+        <div class="analysis-section">
+          <div class="analysis-title">📈 Stats Avançadas</div>
+          <div class="analysis-body">
+            <strong style="color:var(--muted2)">xG Casa:</strong> ${d.stats_avancadas?.xg_casa||'—'}<br>
+            <strong style="color:var(--muted2)">xG Fora:</strong> ${d.stats_avancadas?.xg_fora||'—'}<br>
+            ${d.stats_avancadas?.outros||''}
+          </div>
+        </div>
+      </div>
+
+      ${d.odds_mercado?`
+      <div class="analysis-section" style="margin-bottom:16px">
+        <div class="analysis-title">💰 Odds de Mercado</div>
+        <div class="analysis-body" style="display:flex;gap:16px;flex-wrap:wrap">
+          <div><strong style="color:var(--muted2)">1:</strong> ${d.odds_mercado['1']||'—'}</div>
+          <div><strong style="color:var(--muted2)">X:</strong> ${d.odds_mercado['x']||'—'}</div>
+          <div><strong style="color:var(--muted2)">2:</strong> ${d.odds_mercado['2']||'—'}</div>
+          ${d.odds_mercado.outras_odds?`<div style="flex:1;color:var(--muted2)">${d.odds_mercado.outras_odds}</div>`:''}
+          ${d.odds_mercado.melhor_casa_apostas?`<div><strong style="color:var(--g)">Melhor:</strong> ${d.odds_mercado.melhor_casa_apostas}</div>`:''}
+        </div>
+      </div>`:''}
+
+      ${d.recomendacoes&&d.recomendacoes.length?`
+      <div>
+        <div style="font-family:var(--cond);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted2);margin-bottom:10px">🎯 Recomendações para este Jogo</div>
+        ${d.recomendacoes.map(r=>`
+          <div style="background:var(--s2);border:1px solid var(--border);border-radius:6px;padding:12px 14px;margin-bottom:8px;display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap">
+            <div style="flex:1;min-width:200px">
+              <div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:3px">${r.mercado}</div>
+              <div style="font-family:var(--cond);font-size:17px;font-weight:700">${r.selecao}</div>
+              <div style="font-size:12.5px;color:var(--muted2);margin-top:5px;line-height:1.5">${r.justificacao}</div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:center;flex-shrink:0">
+              <div style="text-align:center"><div style="font-family:var(--cond);font-size:20px;font-weight:700">${parseFloat(r.odd_sugerida||1).toFixed(2)}</div><div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;margin-top:2px">Odd</div></div>
+              <div style="text-align:center"><div style="font-family:var(--cond);font-size:20px;font-weight:700;color:var(--g)">${r.confianca}%</div><div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;margin-top:2px">Confiança</div></div>
+              <div style="text-align:center"><div style="font-family:var(--cond);font-size:20px;font-weight:700;color:var(--y)">+${r.value_pct}%</div><div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;margin-top:2px">Value</div></div>
+              <button class="btn btn-g btn-xs" onclick="preencherRec(${JSON.stringify({...r,jogo:d.jogo,liga:d.liga,tipo:'pre',odd:r.odd_sugerida,stake_sugerido:(S.banca*S.regras.stakeMax/100),raciocinio_resumido:r.justificacao,alertas:'',fontes:d.fontes||[]}).replace(/"/g,'&quot;')})">+ Registar</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>`:''}
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════
+// KELLY
+// ═══════════════════════════════════════════
+function calcKelly(){
+  const odd=parseFloat(document.getElementById('k-odd').value);
+  const prob=parseFloat(document.getElementById('k-prob').value)/100;
+  const banca=parseFloat(document.getElementById('k-banca').value)||S.banca;
+  const frac=parseFloat(document.getElementById('k-frac').value);
+  const el=document.getElementById('k-result');
+  if(!odd||!prob){el.innerHTML='<div class="muted" style="font-size:13px">Preenche os campos...</div>';return;}
+  const kelly=((odd*prob-1)/(odd-1))*frac;
+  const stake=kelly*banca;
+  if(kelly<=0){
+    el.innerHTML=`<div class="r" style="font-family:var(--cond);font-size:16px;font-weight:700">⛔ SEM EDGE — NÃO APOSTAR</div><div class="muted" style="font-size:12px;margin-top:5px">Kelly negativo: odd insuficiente para esta probabilidade estimada.</div>`;
+    return;
+  }
+  el.innerHTML=`
+    <div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap">
+      <div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px">Stake Recomendado</div>
+        <div style="font-family:var(--cond);font-size:30px;font-weight:800;letter-spacing:-1px;color:var(--g)">${fmt(Math.max(0,stake))}</div>
+        <div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:3px">${(kelly*100).toFixed(2)}% da banca</div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:7px;min-width:140px">
+        <div style="display:flex;justify-content:space-between;font-size:13px"><span class="muted">Value Edge</span><span class="mono ${(prob-(1/odd))>0?'g':'r'}">${(((prob-(1/odd))/(1/odd))*100).toFixed(1)}%</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:13px"><span class="muted">Prob. Implícita</span><span class="mono">${((1/odd)*100).toFixed(1)}%</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:13px"><span class="muted">Kelly Puro</span><span class="mono">${((kelly/frac)*100).toFixed(2)}%</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:13px"><span class="muted">Lucro Pot.</span><span class="mono g">+${fmt(stake*(odd-1))}</span></div>
+      </div>
+    </div>`;
+}
+
+function calcValue(){
+  const odd=parseFloat(document.getElementById('v-odd').value);
+  const prob=parseFloat(document.getElementById('v-prob').value)/100;
+  const el=document.getElementById('v-result');
+  if(!odd||!prob){el.innerHTML='<div class="muted" style="font-size:13px">Preenche os campos...</div>';return;}
+  const impl=1/odd;
+  const val=(prob-impl)/impl*100;
+  const hasVal=val>0;
+  el.innerHTML=`
+    <div>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px">Value Edge</div>
+      <div style="font-family:var(--cond);font-size:28px;font-weight:800;letter-spacing:-1px;color:${hasVal?'var(--g)':'var(--r)'}">${val>=0?'+':''}${val.toFixed(1)}%</div>
+      <div style="font-size:12px;color:var(--muted2);margin-top:5px">${hasVal?'✓ Value positivo — potencialmente lucrativo a longo prazo':'⛔ Value negativo — edge matemático do lado da casa'}</div>
+    </div>`;
+  const fairOdd=(1/prob).toFixed(3);
+  document.getElementById('v-fairodds').innerHTML=`
+    <div style="display:flex;gap:16px;font-size:12px">
+      <div><span class="muted">Odd Justa: </span><span class="mono">${fairOdd}</span></div>
+      <div><span class="muted">Odd Mercado: </span><span class="mono">${odd.toFixed(2)}</span></div>
+      <div><span class="muted">Diferença: </span><span class="mono ${hasVal?'g':'r'}">${(odd-fairOdd).toFixed(3)}</span></div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════
+function renderDashboard(){
+  const ap=S.apostas;
+  const wins=ap.filter(a=>a.resultado==='WIN');
+  const losses=ap.filter(a=>a.resultado==='LOSS');
+  const pending=ap.filter(a=>a.resultado==='PENDING');
+  const settled=wins.length+losses.length;
+  const taxa=settled>0?wins.length/settled*100:null;
+  const totalStake=ap.filter(a=>a.resultado!=='PENDING').reduce((s,a)=>s+a.stake,0);
+  const totalPL=ap.reduce((s,a)=>s+(a.pl||0),0);
+  const roi=totalStake>0?totalPL/totalStake*100:null;
+  const hoje=new Date().toISOString().split('T')[0];
+  const diaPL=ap.filter(a=>a.data===hoje&&a.resultado!=='PENDING').reduce((s,a)=>s+(a.pl||0),0);
+
+  document.getElementById('d-banca').textContent=fmt(S.banca);
+  const diff=S.banca-S.bancaIni;
+  document.getElementById('d-delta').textContent=(diff>=0?'▲ +':'▼ ')+fmt(diff)+' total';
+  document.getElementById('d-total').textContent=ap.length;
+  document.getElementById('d-abertas').textContent=pending.length+' em aberto';
+  document.getElementById('d-taxa').textContent=taxa!==null?taxa.toFixed(1)+'%':'—';
+  document.getElementById('d-wl').textContent=wins.length+'W / '+losses.length+'L';
+  document.getElementById('d-roi').textContent=roi!==null?fmtN(roi):'—';
+  document.getElementById('d-lucro').textContent='Lucro: '+fmt(totalPL);
+  document.getElementById('d-dia').textContent=fmt(diaPL);
+  document.getElementById('d-dia-meta').textContent=diaPL>=0?'Dia positivo':'Dia negativo';
+
+  updateHeader();
+  renderSidebarHealth();
+
+  const tbody=document.getElementById('d-tbody');
+  const last=([...ap].reverse()).slice(0,8);
+  if(!last.length){tbody.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:24px">Sem apostas</td></tr>';return;}
+  tbody.innerHTML=last.map(a=>{
+    const pl=a.pl||0;
+    return `<tr>
+      <td class="mono" style="font-size:11px">${a.data}</td>
+      <td style="font-size:13px">${a.jogo}</td>
+      <td style="font-size:12px;color:var(--muted2)">${a.selecao}</td>
+      <td class="mono">${parseFloat(a.odd).toFixed(2)}</td>
+      <td class="mono">${fmt(a.stake)}</td>
+      <td class="mono ${pl>0?'g':pl<0?'r':'muted'}">${pl>=0?'+':''}${fmt(pl)}</td>
+      <td>${bHTML(a.resultado)}</td>
+      <td>${a.resultado==='PENDING'?`<div style="display:flex;gap:3px">
+        <button class="btn btn-outline btn-xs" onclick="resolve(${a.id},'WIN')">W</button>
+        <button style="padding:3px 8px;font-size:11px;font-weight:600;background:rgba(255,45,85,0.1);color:var(--r);border:1px solid rgba(255,45,85,0.2);border-radius:4px;cursor:pointer" onclick="resolve(${a.id},'LOSS')">L</button>
+        <button class="btn btn-outline btn-xs" onclick="resolve(${a.id},'VOID')">V</button>
+      </div>`:''}</td>
+    </tr>`;
+  }).join('');
+
+  // mercados
+  const mc={};
+  ap.forEach(a=>{mc[a.mercado]=(mc[a.mercado]||0)+1;});
+  const mercs=Object.entries(mc).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const maxM=mercs[0]?.[1]||1;
+  const mEl=document.getElementById('d-mercados');
+  if(!mercs.length){mEl.innerHTML='<div class="muted" style="font-size:12px">Sem dados</div>';return;}
+  mEl.innerHTML=mercs.map(([m,c])=>`
+    <div class="prog-row">
+      <div class="prog-label">${m}</div>
+      <div class="prog-bg"><div class="prog-fill" style="width:${c/maxM*100}%"></div></div>
+      <div class="prog-val">${c}</div>
+    </div>`).join('');
+}
+
+function bHTML(r){
+  const m={WIN:'b-g WIN',LOSS:'b-r LOSS',PENDING:'b-b ABERTA',VOID:'b-m VOID'};
+  const [cls,lbl]=(m[r]||'b-m ?').split(' ');
+  return `<span class="badge ${cls}">${lbl}</span>`;
+}
+
+function resolve(id,resultado){
+  const ap=S.apostas.find(a=>a.id===id);
+  if(!ap)return;
+  ap.resultado=resultado;
+  if(resultado==='WIN'){ap.pl=ap.stake*(ap.odd-1);S.banca+=ap.stake+ap.pl;}
+  else if(resultado==='LOSS'){ap.pl=-ap.stake;}
+  else{ap.pl=0;S.banca+=ap.stake;}
+  save();
+  renderDashboard();
+  renderHist();
+  updateHeader();
+  toast('Actualizado',`${ap.jogo}: ${resultado}`);
+}
+
+function updateHeader(){
+  document.getElementById('hdr-banca').textContent=fmt(S.banca);
+  const ap=S.apostas;
+  const wins=ap.filter(a=>a.resultado==='WIN').length;
+  const losses=ap.filter(a=>a.resultado==='LOSS').length;
+  const settled=wins+losses;
+  const taxa=settled>0?(wins/settled*100).toFixed(1)+'%':'—';
+  const totalStake=ap.filter(a=>a.resultado!=='PENDING').reduce((s,a)=>s+a.stake,0);
+  const totalPL=ap.reduce((s,a)=>s+(a.pl||0),0);
+  const roi=totalStake>0?fmtN(totalPL/totalStake*100):'—';
+  const hoje=new Date().toISOString().split('T')[0];
+  const diaPL=ap.filter(a=>a.data===hoje&&a.resultado!=='PENDING').reduce((s,a)=>s+(a.pl||0),0);
+  const roiEl=document.getElementById('hdr-roi');
+  roiEl.textContent=roi;
+  roiEl.className='hdr-stat-val '+(totalPL>0?'g':totalPL<0?'r':'');
+  document.getElementById('hdr-dia').textContent=fmt(diaPL);
+  document.getElementById('hdr-acerto').textContent=taxa;
+}
+
+function renderSidebarHealth(){
+  const ap=S.apostas;
+  const wins=ap.filter(a=>a.resultado==='WIN').length;
+  const losses=ap.filter(a=>a.resultado==='LOSS').length;
+  const settled=wins+losses;
+  const taxa=settled>0?wins/settled*100:0;
+  const bancaPct=S.banca/S.bancaIni*100;
+
+  document.getElementById('sidebar-health').innerHTML=`
+    <div class="prog-row" style="margin-bottom:8px">
+      <div class="prog-label" style="font-size:11px;width:60px">Banca</div>
+      <div class="prog-bg"><div class="prog-fill" style="width:${Math.min(100,bancaPct)}%;background:${bancaPct>=100?'var(--g)':bancaPct>=80?'var(--y)':'var(--r)'}"></div></div>
+      <div class="prog-val" style="font-size:10px">${Math.round(bancaPct)}%</div>
+    </div>
+    <div class="prog-row">
+      <div class="prog-label" style="font-size:11px;width:60px">Acerto</div>
+      <div class="prog-bg"><div class="prog-fill" style="width:${taxa}%"></div></div>
+      <div class="prog-val" style="font-size:10px">${Math.round(taxa)}%</div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════
+// FORM
+// ═══════════════════════════════════════════
+function initForm(){
+  document.getElementById('f-data').value=new Date().toISOString().split('T')[0];
+  document.getElementById('f-hora').value=new Date().toTimeString().slice(0,5);
+  document.getElementById('k-banca').value=S.banca;
+  updateFormVal();
+}
+
+function updateFormVal(){
+  const odd=parseFloat(document.getElementById('f-odd').value);
+  const stake=parseFloat(document.getElementById('f-stake').value);
+  const notas=document.getElementById('f-notas').value.trim();
+  if(stake) document.getElementById('f-pct').value=(stake/S.banca*100).toFixed(2)+'%';
+
+  const r=S.regras;
+  const checks=[];
+  if(odd){
+    checks.push({ok:odd>=r.oddMin,label:`Odd ≥ ${r.oddMin}`,v:odd.toFixed(2)});
+    checks.push({ok:odd<=r.oddMax,label:`Odd ≤ ${r.oddMax}`,v:odd.toFixed(2)});
+  }
+  if(stake){
+    const p=stake/S.banca*100;
+    checks.push({ok:p<=r.stakeMax,label:`Stake ≤ ${r.stakeMax}% banca`,v:p.toFixed(1)+'%'});
+  }
+  if(r.notas) checks.push({ok:notas.length>=10,label:'Raciocínio documentado',v:notas.length+' chars'});
+  const hoje=new Date().toISOString().split('T')[0];
+  const diaA=S.apostas.filter(a=>a.data===hoje).length;
+  checks.push({ok:diaA<r.maxDia,label:`Máx ${r.maxDia}/dia`,v:diaA+'/'+r.maxDia});
+  const diaPL=S.apostas.filter(a=>a.data===hoje&&a.resultado!=='PENDING').reduce((s,a)=>s+(a.pl||0),0);
+  if(r.bStop) checks.push({ok:diaPL>-r.stopLoss,label:'Stop loss não atingido',v:fmt(diaPL)});
+
+  const panel=document.getElementById('f-val');
+  if(!checks.length){panel.innerHTML='<div class="muted" style="font-size:13px">Preenche os campos...</div>';return;}
+  const allOk=checks.every(c=>c.ok);
+  panel.innerHTML=`
+    <div class="alert ${allOk?'alert-ok':'alert-warn'}" style="margin-bottom:12px">${allOk?'✓ Dentro dos critérios — pode avançar':'⚠ Critérios não cumpridos'}</div>
+    ${checks.map(c=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:13px">
+      <span style="color:${c.ok?'var(--g)':'var(--r)'};font-size:14px">${c.ok?'✓':'✗'}</span>
+      <span style="flex:1;color:${c.ok?'var(--text)':'var(--muted2)'}">${c.label}</span>
+      <span class="mono" style="font-size:11px;color:var(--muted)">${c.v}</span>
+    </div>`).join('')}`;
+}
+
+function registar(){
+  const jogo=document.getElementById('f-jogo').value.trim();
+  const odd=parseFloat(document.getElementById('f-odd').value);
+  const stake=parseFloat(document.getElementById('f-stake').value);
+  const selecao=document.getElementById('f-selecao').value.trim();
+  const notas=document.getElementById('f-notas').value.trim();
+  const alertEl=document.getElementById('f-alert');
+  const r=S.regras;
+
+  if(!jogo||!odd||!stake||!selecao){alertEl.innerHTML='<div class="alert alert-warn">⚠ Preenche todos os campos.</div>';return;}
+  if(odd<r.oddMin||odd>r.oddMax){alertEl.innerHTML=`<div class="alert alert-warn">⛔ Odd fora do intervalo (${r.oddMin}–${r.oddMax}).</div>`;return;}
+  if(stake/S.banca*100>r.stakeMax){alertEl.innerHTML=`<div class="alert alert-warn">⛔ Stake excede ${r.stakeMax}% da banca.</div>`;return;}
+  if(r.notas&&notas.length<10){alertEl.innerHTML='<div class="alert alert-warn">⛔ Documenta o raciocínio (mín. 10 chars).</div>';return;}
+
+  const hoje=new Date().toISOString().split('T')[0];
+  const diaPL=S.apostas.filter(a=>a.data===hoje&&a.resultado!=='PENDING').reduce((s,a)=>s+(a.pl||0),0);
+  if(r.bStop&&diaPL<=-r.stopLoss){alertEl.innerHTML='<div class="alert alert-warn">⛔ Stop loss diário atingido.</div>';return;}
+
+  const settled=S.apostas.filter(a=>a.resultado!=='PENDING');
+  const last3=settled.slice(-3);
+  if(r.b3loss&&last3.length===3&&last3.every(a=>a.resultado==='LOSS')){alertEl.innerHTML='<div class="alert alert-warn">⛔ 3 perdas seguidas — sistema bloqueado por disciplina.</div>';return;}
+
+  const ap={
+    id:Date.now(),
+    data:document.getElementById('f-data').value,
+    jogo,liga:document.getElementById('f-liga').value,
+    mercado:document.getElementById('f-mercado').value,
+    selecao,odd,stake,
+    tipo:document.getElementById('f-tipo').value,
+    notas,resultado:'PENDING',pl:0
+  };
+  S.banca-=stake;
+  S.apostas.push(ap);
+  save();
+  updateHeader();
+  toast('✓ Registada',`${jogo} @ ${odd.toFixed(2)}`);
+  limparForm();
+  alertEl.innerHTML='<div class="alert alert-ok">✓ Aposta registada! Actualiza o resultado no Histórico após o jogo.</div>';
+}
+
+function limparForm(){
+  ['f-jogo','f-liga','f-selecao','f-odd','f-stake','f-notas','f-pct'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('f-alert').innerHTML='';
+}
+
+// ═══════════════════════════════════════════
+// HISTÓRICO
+// ═══════════════════════════════════════════
+function renderHist(){
+  const filtro=document.getElementById('filtro-r').value;
+  let ap=[...S.apostas].reverse();
+  if(filtro!=='todos') ap=ap.filter(a=>a.resultado===filtro);
+  const tbody=document.getElementById('h-tbody');
+  if(!ap.length){tbody.innerHTML='<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:32px">Sem apostas</td></tr>';return;}
+  tbody.innerHTML=ap.map(a=>{
+    const pl=a.pl||0;
+    return `<tr>
+      <td class="mono" style="font-size:11px">${a.data}</td>
+      <td style="font-size:13px">${a.jogo}</td>
+      <td style="font-size:11px;color:var(--muted2)">${a.mercado}</td>
+      <td style="font-size:12px">${a.selecao}</td>
+      <td class="mono">${parseFloat(a.odd).toFixed(2)}</td>
+      <td class="mono">${fmt(a.stake)}</td>
+      <td class="mono ${pl>0?'g':pl<0?'r':'muted'}">${pl>=0?'+':''}${fmt(pl)}</td>
+      <td><span class="badge ${a.tipo==='live'?'b-live':'b-b'}">${a.tipo==='live'?'LIVE':'PRÉ'}</span></td>
+      <td>${bHTML(a.resultado)}</td>
+      <td>${a.resultado==='PENDING'?`<div style="display:flex;gap:3px">
+        <button class="btn btn-outline btn-xs" onclick="resolve(${a.id},'WIN')">W</button>
+        <button style="padding:3px 8px;font-size:11px;font-weight:600;background:rgba(255,45,85,0.1);color:var(--r);border:1px solid rgba(255,45,85,0.2);border-radius:4px;cursor:pointer" onclick="resolve(${a.id},'LOSS')">L</button>
+        <button class="btn btn-outline btn-xs" onclick="resolve(${a.id},'VOID')">V</button>
+      </div>`:''}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════
+// REGRAS
+// ═══════════════════════════════════════════
+function initRules(){
+  const r=S.regras;
+  document.getElementById('r-banca').value=S.bancaIni;
+  document.getElementById('r-stake').value=r.stakeMax;
+  document.getElementById('r-stop').value=r.stopLoss;
+  document.getElementById('r-profit').value=r.profitTarget;
+  document.getElementById('r-oddmin').value=r.oddMin;
+  document.getElementById('r-oddmax').value=r.oddMax;
+  document.getElementById('r-maxdia').value=r.maxDia;
+  document.getElementById('r-confmin').value=r.confMin;
+  const set=(id,v)=>{const el=document.getElementById(id);v?el.classList.add('on'):el.classList.remove('on');};
+  set('t1',r.b3loss); set('t2',r.bStop); set('t3',r.notas); set('t4',r.filtroConf); set('t5',r.alertVal);
+}
+
+function saveRules(){
+  const r=S.regras;
+  r.stakeMax=parseFloat(document.getElementById('r-stake').value)||5;
+  r.stopLoss=parseFloat(document.getElementById('r-stop').value)||50;
+  r.profitTarget=parseFloat(document.getElementById('r-profit').value)||100;
+  r.oddMin=parseFloat(document.getElementById('r-oddmin').value)||1.4;
+  r.oddMax=parseFloat(document.getElementById('r-oddmax').value)||5;
+  r.maxDia=parseInt(document.getElementById('r-maxdia').value)||5;
+  r.confMin=parseFloat(document.getElementById('r-confmin').value)||60;
+  r.b3loss=document.getElementById('t1').classList.contains('on');
+  r.bStop=document.getElementById('t2').classList.contains('on');
+  r.notas=document.getElementById('t3').classList.contains('on');
+  r.filtroConf=document.getElementById('t4').classList.contains('on');
+  r.alertVal=document.getElementById('t5').classList.contains('on');
+  const nb=parseFloat(document.getElementById('r-banca').value);
+  if(nb&&S.apostas.length===0){S.banca=nb;S.bancaIni=nb;}
+  save(); updateHeader();
+  toast('✓ Guardado','Regras actualizadas.');
+}
+
+// ═══════════════════════════════════════════
+// EXPORT
+// ═══════════════════════════════════════════
+function exportCSV(){
+  const h=['Data','Jogo','Liga','Mercado','Sel','Odd','Stake','P/L','Tipo','Resultado'];
+  const rows=S.apostas.map(a=>[a.data,`"${a.jogo}"`,`"${a.liga||''}"`,a.mercado,`"${a.selecao}"`,a.odd,a.stake,(a.pl||0).toFixed(2),a.tipo,a.resultado]);
+  const csv=[h,...rows].map(r=>r.join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='tradeedge_pro.csv';a.click();
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+updateHeader();
+renderSidebarHealth();
+document.getElementById('a-data').value=new Date().toISOString().split('T')[0];
+</script>
+</body>
+</html>
